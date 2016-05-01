@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>XfD Stats</title>
+    <link href="assets/css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>XfD Statistics Tool</h1>
+    <form action="cgi-bin/xfd-stats.py" method="get">
+      <table>
+        <tr>
+          <th><label for="username">Username</label></th>
+          <td><input type="text" id="username" name="username" required /></td>
+        </tr>
+        <tr>
+          <th><label for="max">Number of pages to look at</label></th>
+          <td><input type="text" id="max" name="max" /></td>
+        </tr>
+        <tr>
+          <td><input type="submit" /></td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>
+

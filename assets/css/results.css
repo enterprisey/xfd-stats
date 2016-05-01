@@ -1,0 +1,78 @@
+table {
+    background-color: white;
+}
+
+#percentages {
+    width: 100%;
+    text-align: center;
+}
+
+.percentage-wrapper {
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    border: thin gray solid;
+    margin: 2%;
+    padding: 2px;
+    background-color: #FAFAFA;
+    border-top-width: thick;
+    border-top-style: solid;
+}
+
+#percentages .afd {
+    border-top-color: #D45500;
+}
+
+#percentages .tfd {
+    border-top-color: #DF00BA;
+}
+
+#percentages .mfd {
+    border-top-color: #1ECEAB;
+}
+
+.process {
+    font-size: 200%;
+    display: block;
+}
+
+.matrix {
+    margin-right: 10px;
+}
+
+.matrix td, .matrix th {
+    padding: .25em;
+    text-align: center;
+}
+
+.matrix td.agree-nonzero {
+    background-color: #9f9;
+}
+
+.matrix td.agree-zero {
+    background-color: #b7e0b7;
+}
+
+.matrix td.disagree-nonzero {
+    background-color: #ff9;
+}
+
+.matrix td.disagree-zero {
+    background-color: #e0e0b7;
+}
+
+span.recent {
+    color: #666;
+}
+
+td, th {
+    border: thin solid black;
+}
+
+a.percentage-wrapper {
+    color: black;
+}
+
+a.percentage-wrapper:hover {
+    text-decoration: none;
+}
