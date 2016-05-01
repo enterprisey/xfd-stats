@@ -17,7 +17,11 @@ def process(texts, username):
         timestamp = my_votes[-1][2]
 
         if "The following discussion is an archived debate" in text:
-            close, _ = utils.get_close(text)
+            close_and_username = utils.get_close(text)
+            if close_and_username:
+                close = close_and_username[0]
+            else:
+                close = None
         else:
             close = "Not closed yet"
         close = parse_vote(close)

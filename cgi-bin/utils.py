@@ -7,7 +7,8 @@ VOTE = re.compile(r"'''(.*?)'''.*?" + SIGNATURE,
 USERNAME = re.compile(r"\[\[User.*?:(.*?)(?:\||(?:\]\]))",
                   flags=re.IGNORECASE)
 TIMESTAMP = re.compile(r"\d{2}:\d{2}, \d{1,2} [A-Za-z]* \d{4} \(UTC\)")
-RESULT = re.compile(r"The\s+result\s+(?:of\s+the\s+(?:debate|discussion)\s+)?was(?:.*?)'''(.*?)'''.*?" + SIGNATURE)
+RESULT = re.compile(r"The\s+result\s+(?:of\s+the\s+(?:debate|discussion)\s+)?was(?:.*?)'''(.*?)'''.*?" + SIGNATURE,
+                    flags=re.IGNORECASE)
 
 def wikitext_to_votes(wikitext):
     """Given wikitext, returns a generator that yields votes in the form of (type, username, datetime)."""
