@@ -27,6 +27,18 @@ table {
     border-top-color: #DF00BA;
 }
 
+#percentages .ffd {
+    border-top-color: #BD7270;
+}
+
+#percentages .cfd {
+    border-top-color: #323296;
+}
+
+#percentages .rfd {
+    border-top-color: #FDC300;
+}
+
 #percentages .mfd {
     border-top-color: #1ECEAB;
 }
