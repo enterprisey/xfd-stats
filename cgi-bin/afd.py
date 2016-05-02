@@ -19,12 +19,11 @@ def process(texts, username):
         if "The following discussion is an archived debate" in text:
             close_and_username = utils.get_close(text)
             if close_and_username:
-                close = close_and_username[0]
+                close = parse_vote(close_and_username[0])
             else:
                 close = None
         else:
             close = "Not closed yet"
-        close = parse_vote(close)
 
         if bool(vote) and bool(close):
             recent.append((title, discussion, timestamp, vote, close))

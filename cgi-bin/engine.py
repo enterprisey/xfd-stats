@@ -10,11 +10,6 @@ import afd
 import tfd
 import mfd
 
-# These next few imports are just so we can screw with globals()
-from afd import process as process_afd
-from tfd import process as process_tfd
-from mfd import process as process_mfd
-
 def print_stats(username, max_pages):
     wikitexts = get_wikitexts(username, max_pages)
 
