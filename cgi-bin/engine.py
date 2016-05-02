@@ -82,9 +82,12 @@ def print_stats(username, max_pages):
             continue
 
         vote_types = globals()[process].VOTE_TYPES
+
+        def make_row(row, vote_type):
+            return "".join("<td class='%sagree-%szero'>%d</td>" % ("" if vote_type == result_type else "dis", "non" if vote_count > 0 else "", vote_count) for vote_count, result_type in zip(row, vote_types))
         print("<table class='matrix'>")
         print("<tr><td></td>" + "".join("<th>%s</th>" % v for v in vote_types) + "</tr>")
-        print("".join("<tr>" + "<th>%s</th>" % vote_type + "".join("<td class='%sagree-%szero'>%d</td>" % ("" if vote_type == result_type else "dis", "non" if x > 0 else "", x) for x, result_type in zip(row, vote_types)) + "</tr>" for vote_type, row in zip(vote_types, matrix)))
+        print("".join("<tr>" + "<th>%s</th>" % vote_type + make_row(row, vote_type) + "</tr>" for vote_type, row in zip(vote_types, matrix) if vote_type != "NC"))
         print("</table>")
 
         if recent:

@@ -10,7 +10,7 @@ def get_wikitexts(username, max_pages):
     site = mwclient.Site(EN_WP, clients_useragent=USER_AGENT)
 
     # Get the wikitexts of each page
-    print("<p>Scanned %s's %d most recent Wikipedia-namespace contributions.</p>" % (username, max_pages))
+    print("<p>Scanned <a href='https://en.wikipedia.org/wiki/User:{0}'>{0}</a>'s {1} most recent Wikipedia-namespace contributions.</p>".format(username, max_pages))
     contributions = get_contributions(site, username, max_pages)
     if not contributions:
         raise ValueError("No contributions for %s found." % username)
