@@ -2,19 +2,25 @@ import cgi
 import datetime
 import itertools
 import json
+import re
+import urllib
 
 from mwclient import Site
 
 from get_wikitexts import get_wikitexts
 import afd
 import tfd
+import ffd
 import mfd
+
+TO_CLAUSE = re.compile(r"to \[\[.+\]\]")
 
 def print_stats(username, max_pages):
     wikitexts = get_wikitexts(username, max_pages)
 
     # Sort each wikitext by category
     SUBSTRING_MAP = {"Articles": "afd", "Templates": "tfd", "Files": "ffd", "Categories": "cfd", "Redirects": "rfd", "Miscellany": "mfd"}
+    PROCESS_ORDER = ("afd", "tfd", "ffd", "cfd", "rfd", "mfd")
     sorted_texts = {process: [] for process in SUBSTRING_MAP.values()}
     for title, text in wikitexts.items():
         for substring in SUBSTRING_MAP.keys():
@@ -22,20 +28,21 @@ def print_stats(username, max_pages):
                 sorted_texts[SUBSTRING_MAP[substring]].append((title, text))
                 break
 
-    # Remove processes with no wikitexts
-    sorted_texts = {x: dict(y) for x, y in sorted_texts.items() if y}
-
-    print("<table><tr><th>Process</th><th>Number of unique pages edited</th></tr>")
-    print("".join("<tr><td>%s</td><td>%d</td></tr>" % (process[0].upper() + "fD", len(texts)) for process, texts in sorted_texts.items()))
-    print("</table>")
+    # Used to check if sections and table cells should be displayed.
+    num_pages_edited = {process: len(texts) for process, texts in sorted_texts.items()}
 
     # Get data for each process
-    processes = []
-    for process, texts in sorted_texts.items():
+    processes = {}
+    for process in PROCESS_ORDER:
         if process not in globals():
             # aw man, I forgot to implement it
-            processes.append((process, [], []))
+            processes[process] = ([], [])
             continue
+
+        texts = sorted_texts[process]
+        if not texts or len(texts) == 0:
+            continue
+        texts = dict(texts)
 
         process_module = globals()[process]
         if "process" in dir(process_module):
@@ -49,36 +56,44 @@ def print_stats(username, max_pages):
             matrix.append([0] * len(vote_types))
 
         for _, __, ___, vote, close in recent:
-            if vote not in vote_types: continue
-            if close not in vote_types: continue
-            matrix[vote_types.index(vote)][vote_types.index(close)] += 1
+            vote = process_module.parse_vote(vote)
+            close = process_module.parse_vote(close)
+            if bool(vote) and bool(close):
+                matrix[vote_types.index(vote)][vote_types.index(close)] += 1
 
-        processes.append((process, matrix, recent))
+        processes[process] = (matrix, recent)
 
-    process_matrix_recent = zip(sorted_texts.keys(), zip(*processes)[1], zip(*processes)[2])
-
-    print("<div id='percentages'>")
-    percentage_wrapper_width = ((100 - 11 * (len(sorted_texts) - 1)) / len(sorted_texts))
-    for process, matrix, recent in process_matrix_recent:
-        if process not in globals():
-            # aw man, I forgot to implement it
-            percentage = "?"
-        else:
-            total_discussions = sum(sum(row) for row in matrix)
-            correct_discussions = sum(matrix[i][i] for i in range(len(matrix)))
-            percentage = "%.1f%%" % (100 * (float(correct_discussions) / total_discussions)) if total_discussions != 0 else "?"
-
-        print("<a class='percentage-wrapper %s' style='width: %d%%;' href='#%s'><span class='process'>%sfD</span><span class='percentage'>%s</span><br />%d vote%s</a>" % (process, percentage_wrapper_width, process, process[0].upper(), percentage, len(recent), "" if len(recent) == 1 else "s"))
-    print("</div>")
+    print("<table id='percentages'>")
+    for processes_in_this_row in (PROCESS_ORDER[:3], PROCESS_ORDER[3:]):
+        print("<tr>")
+        for process in processes_in_this_row:
+            if num_pages_edited[process]:
+                matrix, recent = processes[process]
+                total_discussions = sum(sum(row) for row in matrix)
+                correct_discussions = sum(matrix[i][i] for i in range(len(matrix)))
+                percentage = "%.1f%%" % (100 * (float(correct_discussions) / total_discussions)) if total_discussions != 0 else "?"
+                print("""  <td class='{0}'>
+    <a class='percentage-link' href='#{0}'>
+      <span class='process'>{1}fD</span>
+      <span class='percentage'>{2}</span><br />
+      {3} vote{4}<br />
+      {5} page{6} edited
+    </a>
+  </td>""".format(process, process[0].upper(), percentage, len(recent), "" if len(recent) == 1 else "s", num_pages_edited[process], "" if num_pages_edited[process] == 1 else "s"))
+            else:
+                print("<td class='empty'>(No {0}fD votes)</td>".format(process[0].upper()))
+        print("</tr>")
+    print("</table>")
 
     print("<h2>Individual XfD's</h1>")
     PROCESS_NAMES = {"afd": "Articles for deletion", "tfd": "Templates for discussion", "ffd": "Files for discussion", "cfd": "Categories for discussion", "rfd": "Redirects for discussion", "mfd": "Miscellany for deletion"}
-    for process, matrix, recent in process_matrix_recent:
+    for process in (x for x in PROCESS_ORDER if num_pages_edited[x]):
+        matrix, recent = processes[process]
         print("<h3 id='%s'>%s</h3>" % (process, PROCESS_NAMES[process]))
 
-        if process not in globals():
+        if process not in globals() or not recent:
             # aw man, I forgot to implement it
-            print("(no data available)")
+            print("<span class='empty-section'>(no voting data available)</span>")
             continue
 
         vote_types = globals()[process].VOTE_TYPES
@@ -86,18 +101,20 @@ def print_stats(username, max_pages):
         def make_row(row, vote_type):
             return "".join("<td class='%sagree-%szero'>%d</td>" % ("" if vote_type == result_type else "dis", "non" if vote_count > 0 else "", vote_count) for vote_count, result_type in zip(row, vote_types))
         print("<table class='matrix'>")
-        print("<tr><td></td>" + "".join("<th>%s</th>" % v for v in vote_types) + "</tr>")
+        print("<tr><td class='hidden'></td>" + "".join("<th>%s</th>" % v for v in vote_types) + "</tr>")
         print("".join("<tr>" + "<th>%s</th>" % vote_type + make_row(row, vote_type) + "</tr>" for vote_type, row in zip(vote_types, matrix) if vote_type != "NC"))
         print("</table>")
 
-        if recent:
-            print("<br />")
-            print("<table><tr><th>Page</th><th>Timestamp</th><th>Vote</th><th>Result</th></tr>")
-            recent.sort(key=lambda x:x[2], reverse=True)
-            for title, discussion, timestamp, vote, close in recent:
-                print("<tr><td><a href='https://en.wikipedia.org/wiki/%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>" % (discussion.encode("utf-8"), title.encode("utf-8"), datetime.datetime.strftime(timestamp, "%-d %B %Y"), vote, close))
-            print("</table>")
-        else:
-            print("<span class='recent'>(no recent votes)</span>")
+        print("<br />")
+        print("<table class='recent'><tr><th>Page</th><th>Timestamp</th><th>Vote</th><th>Result</th></tr>")
+        recent.sort(key=lambda x:x[2], reverse=True)
+        for title, discussion, timestamp, vote, close in recent:
+            print("<tr><td><a href='https://en.wikipedia.org/wiki/%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>" % (urllib.quote(discussion.encode("utf-8")), title.encode("utf-8"), datetime.datetime.strftime(timestamp, "%-d %B %Y"), format_vote_for_recent_table(vote), format_vote_for_recent_table(close.encode("utf-8"))))
+        print("</table><div style='clear: both;'></div>")
 
-        print("<div style='clear: both;'></div>")
+def format_vote_for_recent_table(vote):
+    """Used to format both votes and closes for the recent tables."""
+    vote = vote.encode("utf-8").capitalize()
+    if "to" in vote:
+        vote = vote.split("to")[0]
+    return vote

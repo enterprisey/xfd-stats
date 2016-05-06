@@ -15,7 +15,7 @@ def get_wikitexts(username, max_pages):
     if not contributions:
         raise ValueError("No contributions for %s found." % username)
     #contributions = get_contributions_from_file(site, username)
-    titles = list(set(x["title"] for x in contributions if "for deletion/" in x["title"] or "for discussion/Log" in x["title"]))
+    titles = list(set(x["title"] for x in contributions if "for deletion/" in x["title"] or "for discussion/" in x["title"]))
     if not titles:
         raise ValueError("No deletion contributions for %s found." % username)
     wikitexts = get_texts(site, titles)

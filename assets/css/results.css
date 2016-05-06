@@ -2,45 +2,56 @@ table {
     background-color: white;
 }
 
+th {
+    border: thin solid black;
+}
+
 #percentages {
     width: 100%;
+    table-layout: fixed;
+}
+
+#percentages td {
     text-align: center;
+    border: thin solid gray;
 }
 
-.percentage-wrapper {
-    display: inline-block;
-    vertical-align: top;
-    text-align: center;
-    border: thin gray solid;
-    margin: 2%;
-    padding: 2px;
-    background-color: #FAFAFA;
-    border-top-width: thick;
-    border-top-style: solid;
+#percentages td.empty {
+    background-color: #EAEAEA;
+    color: #555;
 }
 
-#percentages .afd {
-    border-top-color: #D45500;
+#percentages td.afd {
+    box-shadow: 0px 10px 0px 0px #D45500 inset;
 }
 
-#percentages .tfd {
-    border-top-color: #DF00BA;
+#percentages td.tfd {
+    box-shadow: 0px 10px 0px 0px #DF00BA inset;
 }
 
-#percentages .ffd {
-    border-top-color: #BD7270;
+#percentages td.ffd {
+    box-shadow: 0px 10px 0px 0px #BD7270 inset;
 }
 
-#percentages .cfd {
-    border-top-color: #323296;
+#percentages td.cfd {
+    box-shadow: 0px 10px 0px 0px #323296 inset;
 }
 
-#percentages .rfd {
-    border-top-color: #FDC300;
+#percentages td.rfd {
+    box-shadow: 0px 10px 0px 0px #FDC300 inset;
 }
 
-#percentages .mfd {
-    border-top-color: #1ECEAB;
+#percentages td.mfd {
+    box-shadow: 0px 10px 0px 0px #1ECEAB inset;
+}
+
+#percentages a {
+    display: block;
+    color: black;
+}
+
+#percentages a:hover {
+    text-decoration: none;
 }
 
 .process {
@@ -50,11 +61,27 @@ table {
 
 .matrix {
     margin-right: 10px;
+    background-color: #F3F3F3;
+    border-right: thin solid black;
+    border-bottom: thin solid black;
 }
 
 .matrix td, .matrix th {
     padding: .25em;
     text-align: center;
+}
+
+.matrix th {
+    background-color: white;
+}
+
+.matrix td {
+    border: thin dotted #BBB;
+}
+
+.matrix td.hidden {
+    background-color: #F3F3F3;
+    border: 0;
 }
 
 .matrix td.agree-nonzero {
@@ -73,18 +100,10 @@ table {
     background-color: #e0e0b7;
 }
 
-span.recent {
-    color: #666;
-}
-
-td, th {
+table.recent td {
     border: thin solid black;
 }
 
-a.percentage-wrapper {
-    color: black;
-}
-
-a.percentage-wrapper:hover {
-    text-decoration: none;
+.empty-section {
+    color: #666;
 }

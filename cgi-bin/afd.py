@@ -9,23 +9,9 @@ def process(texts, username):
     recent = []
     for discussion, text in texts.items():
         title = discussion.replace("Wikipedia:Articles for deletion/", "")
-
-        my_votes = list(x for x in utils.wikitext_to_votes(text) if x[1] == username)
-        if not my_votes:
-            continue
-        vote = parse_vote(my_votes[-1][0])
-        timestamp = my_votes[-1][2]
-
-        if "The following discussion is an archived debate" in text:
-            close_and_username = utils.get_close(text)
-            if close_and_username:
-                close = parse_vote(close_and_username[0])
-            else:
-                close = None
-        else:
-            close = "Not closed yet"
-
-        if bool(vote) and bool(close):
+        result_entry = utils.text_to_recent(text, username, parse_vote)
+        if result_entry:
+            timestamp, vote, close = result_entry
             recent.append((title, discussion, timestamp, vote, close))
     return recent
 
