@@ -108,8 +108,9 @@ def print_stats(username, max_pages):
         print("<br />")
         print("<table class='recent'><tr><th>Page</th><th>Timestamp</th><th>Vote</th><th>Result</th></tr>")
         recent.sort(key=lambda x:x[2], reverse=True)
+        recent = [x for x in recent if "comment" not in x[3].lower() and "note" not in x[3].lower()]
         for title, discussion, timestamp, vote, close in recent:
-            print("<tr><td><a href='https://en.wikipedia.org/wiki/%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>" % (urllib.quote(discussion.encode("utf-8")), title.encode("utf-8"), datetime.datetime.strftime(timestamp, "%-d %B %Y"), format_vote_for_recent_table(vote), format_vote_for_recent_table(close.encode("utf-8"))))
+            print("<tr><td class='title'><a href='https://en.wikipedia.org/wiki/%s'>%s</a></td><td>%s</td><td>%s</td><td>%s</td></tr>" % (urllib.quote(discussion.encode("utf-8")), title.encode("utf-8"), datetime.datetime.strftime(timestamp, "%-d %B %Y"), format_vote_for_recent_table(vote), format_vote_for_recent_table(close.encode("utf-8"))))
         print("</table><div style='clear: both;'></div>")
 
 def format_vote_for_recent_table(vote):
@@ -117,4 +118,4 @@ def format_vote_for_recent_table(vote):
     vote = vote.encode("utf-8").capitalize()
     if "to" in vote:
         vote = vote.split("to")[0]
-    return vote
+    return vote.replace(".", "")

@@ -16,7 +16,8 @@ def process(texts, username):
             result_entry = utils.text_to_recent(body, username, parse_vote)
             if result_entry:
                 timestamp, vote, close = result_entry
-                recents.append((title, discussion, timestamp, vote, close))
+                if close.lower() != "relist":
+                    recents.append((title, discussion, timestamp, vote, close))
     return recents
 
 def parse_vote(v):

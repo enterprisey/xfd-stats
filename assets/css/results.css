@@ -104,6 +104,10 @@ table.recent td {
     border: thin solid black;
 }
 
+table.recent td.title {
+    word-break: break-all;
+}
+
 .empty-section {
     color: #666;
 }
