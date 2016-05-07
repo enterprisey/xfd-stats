@@ -25,7 +25,7 @@ def process(texts, username):
                     if close_and_username:
                         close = close_and_username[0]
                     else:
-                        close = "?"
+                        close = "Not closed yet"
 
                     timestamp = utils.get_timestamp(body)
 
