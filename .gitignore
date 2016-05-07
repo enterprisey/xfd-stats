@@ -2,3 +2,6 @@
 *.json
 *~
 *.pyc
+
+# A script I use for launching the webserver and stuff
+go
