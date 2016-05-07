@@ -7,6 +7,9 @@ import sys
 
 from engine import print_stats
 
+DEFAULT_MAX_PAGES = 50
+MAXIMUM_MAX_PAGES = 10000
+
 def main():
     print_header()
     form = cgi.FieldStorage()
@@ -16,12 +19,12 @@ def main():
 
     if form.getvalue("max"):
         try:
-            max_pages = int(form.getvalue("max"))
+            max_pages = min(int(form.getvalue("max")), MAXIMUM_MAX_PAGES)
         except ValueError:
-            max_pages = 50
+            max_pages = DEFAULT_MAX_PAGES
     else:
         print("Assuming that you want the most recent 50 pages.")
-        max_pages = 50
+        max_pages = DEFAULT_MAX_PAGES
 
     print("""<h1>XfD Stats for %s</h1><div id="stats">""" % username)
     try:
