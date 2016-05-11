@@ -12,6 +12,7 @@ import afd
 import tfd
 import ffd
 import mfd
+import rfd
 
 TO_CLAUSE = re.compile(r"to \[\[.+\]\]")
 NON_DISPLAYED_VOTES = ("note", "comment", "question")

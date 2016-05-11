@@ -10,7 +10,6 @@ USERNAME = re.compile(r"\[\[User.*?:(.*?)(?:\||(?:\]\]))",
 TIMESTAMP = re.compile(r"\d{2}:\d{2}, \d{1,2} [A-Za-z]* \d{4} \(UTC\)")
 RESULT = re.compile(r"The\s+result\s+(?:of\s+the\s+(?:debate|discussion)\s+)?was(?:.*?)'''(.*?)'''.*?" + SIGNATURE_REGEX,
                     flags=re.IGNORECASE)
-ARCHIVE_TEXT = "The following discussion is an archived debate"
 
 def wikitext_to_votes(wikitext):
     """Given wikitext, returns a generator that yields votes in the form of (type, username, datetime)."""
@@ -104,7 +103,7 @@ def text_to_recent(text, username, parse_vote=None):
     vote = my_votes[0][0]
     timestamp = my_votes[0][2]
 
-    if ARCHIVE_TEXT in text:
+    if RESULT.search(text):
         close_and_username = get_close(text)
         if close_and_username:
             close = close_and_username[0]
