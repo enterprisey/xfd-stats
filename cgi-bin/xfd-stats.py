@@ -4,6 +4,7 @@ import cgitb; cgitb.enable()
 
 import cgi
 import sys
+import traceback
 
 from engine import print_stats
 
@@ -30,7 +31,7 @@ def main():
     try:
         print_stats(username, max_pages)
     except ValueError as e:
-        error_and_exit("Error! Unable to calculate statistics. " + str(e) + " You may have misspelled that username.")
+        error_and_exit("Error! Unable to calculate statistics. " + str(e) + " You may have misspelled that username.", traceback.format_exc())
     print("</div>")
     print_footer()
 
@@ -48,8 +49,10 @@ def print_header():
     </head>
     <body><p><a href="../index.html">&larr; New search</a></p>""")
 
-def error_and_exit(error):
+def error_and_exit(error, traceback=""):
     print("""<p class="error">%s</p>""" % error)
+    if traceback:
+        print("""<pre class="error traceback">%s</pre>""" % traceback)
     print_footer()
     sys.exit(0)
 

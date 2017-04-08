@@ -28,10 +28,6 @@ def parse_vote(v):
         return None
     elif "merge" in v:
         return "M"
-    elif "speedy keep" in v:
-	return "SK"
-    elif "speedy delete" in v:
-	return "SD"
     elif "keep" in v:
 	return "K"
     elif "delete" in v:

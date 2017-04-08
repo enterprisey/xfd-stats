@@ -60,7 +60,8 @@ def print_stats(username, max_pages):
         for _, __, ___, vote, close in recent:
             vote = process_module.parse_vote(vote)
             close = process_module.parse_vote(close)
-            if bool(vote) and bool(close):
+            if ((bool(vote) and vote in vote_types) and
+                (bool(close) and close in vote_types)):
                 matrix[vote_types.index(vote)][vote_types.index(close)] += 1
 
         processes[process] = (matrix, recent)
